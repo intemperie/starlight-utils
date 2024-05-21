@@ -1,0 +1,39 @@
+{
+  "name": "@lorenzo_lewis/starlight-utils",
+  "author": "Lorenzo Lewis",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "A collection of utilities to build on top of your 🌟 Starlight site.",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./overrides/Sidebar.astro": "./overrides/Sidebar.astro"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.23.1",
+    "astro": "^4.8.6"
+  },
+  "peerDependencies": {
+    "@astrojs/starlight": ">=0.16.0",
+    "astro": ">=4.0.0"
+  },
+  "dependencies": {
+    "astro-integration-kit": "^0.13.3"
+  },
+  "keywords": [
+    "starlight",
+    "plugin",
+    "utils",
+    "astro"
+  ],
+  "homepage": "https://starlight-utils.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lorenzolewis/starlight-utils.git",
+    "directory": "packages/starlight-utils"
+  },
+  "bugs": "https://github.com/lorenzolewis/starlight-utils/issues"
+}
