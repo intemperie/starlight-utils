@@ -1,26 +1,12 @@
 ---
-import { getSidebar } from "virtual:starlight/utils/navigation";
-
+/**
+ * components/NavLinks.astro — server-rendered header links (no virtual imports).
+ * Props: links: Array<{ label: string; href: string }>
+ */
 type Link = { label: string; href: string };
-const { links: propLinks = [] } = Astro.props as { links?: Link[] };
+const { links = [] } = Astro.props as { links?: Link[] };
 
-// If no links are provided by the utility config, derive them from the sidebar.
-const sidebar = getSidebar?.() ?? [];
-let links: Link[] = propLinks.length
-  ? propLinks
-  : (sidebar
-      .map((group: any) => {
-        const href =
-          group?.href ??
-          group?.items?.[0]?.href ??
-          group?.items?.[0]?.children?.[0]?.href ??
-          "";
-        const label = group?.label ?? group?.items?.[0]?.label ?? "";
-        return href && label ? ({ href, label } as Link) : null;
-      })
-      .filter(Boolean) as Link[]);
-
-// --- Ancestor-active logic ---
+// Ancestor-active (longest-prefix) logic
 const norm = (s: string) => (s?.endsWith("/") ? s : s + "/");
 const current = norm(Astro.url.pathname);
 
