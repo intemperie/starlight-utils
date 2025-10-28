@@ -1,49 +1,60 @@
 ---
-/**
- * Server-rendered header links with ancestor-active logic.
- * Props: links: Array<{ label: string; href: string }>
- */
-type Link = { label: string; href: string };
-const { links = [] } = Astro.props as { links: Link[] };
+import { getSidebar } from "virtual:starlight/utils/navigation";
 
+type Link = { label: string; href: string };
+const { links: propLinks = [] } = Astro.props as { links?: Link[] };
+
+// If no links are provided by the utility config, derive them from the sidebar.
+const sidebar = getSidebar?.() ?? [];
+let links: Link[] = propLinks.length
+  ? propLinks
+  : (sidebar
+      .map((group: any) => {
+        const href =
+          group?.href ??
+          group?.items?.[0]?.href ??
+          group?.items?.[0]?.children?.[0]?.href ??
+          "";
+        const label = group?.label ?? group?.items?.[0]?.label ?? "";
+        return href && label ? ({ href, label } as Link) : null;
+      })
+      .filter(Boolean) as Link[]);
+
+// --- Ancestor-active logic ---
 const norm = (s: string) => (s?.endsWith("/") ? s : s + "/");
 const current = norm(Astro.url.pathname);
 
-// Pick the longest href that prefixes the current path
 let bestHref: string | null = null;
 for (const l of links) {
-    const h = norm(l.href);
-    if (h !== "/" && current.startsWith(h)) {
-        if (!bestHref || h.length > norm(bestHref).length) bestHref = l.href;
-    }
+  const h = norm(l.href);
+  if (h !== "/" && current.startsWith(h)) {
+    if (!bestHref || h.length > norm(bestHref).length) bestHref = l.href;
+  }
 }
 const isActive = (href: string) => bestHref && norm(href) === norm(bestHref);
 ---
 
 <ul class="slu-nav-links">
-    {
-        links.map((l) => (
-            <li>
-                <a
-                    href={l.href}
-                    aria-current={isActive(l.href) ? "true" : "false"}
-                >
-                    {l.label}
-                </a>
-            </li>
-        ))
-    }
+  {
+    links.map((l) => (
+      <li>
+        <a href={l.href} aria-current={isActive(l.href) ? "true" : "false"}>
+          {l.label}
+        </a>
+      </li>
+    ))
+  }
 </ul>
 
 <style>
-    .slu-nav-links {
-        display: inline-flex;
-        gap: 0.5rem;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-    .slu-nav-links a[aria-current="true"] {
-        font-weight: 600;
-    }
+  .slu-nav-links {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .slu-nav-links a[aria-current="true"] {
+    font-weight: 600;
+  }
 </style>
