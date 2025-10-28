@@ -1,7 +1,7 @@
 {
   "name": "@lorenzo_lewis/starlight-utils",
   "author": "Lorenzo Lewis",
-  "version": "0.3.2",
+  "version": "0.3.2-faro.0",
   "license": "MIT",
   "description": "Utilities to use with your 🌟 Starlight site.",
   "type": "module",
@@ -12,17 +12,16 @@
     "./components/SiteTitle.astro": "./components/SiteTitle.astro",
     "./components/Sidebar.astro": "./components/Sidebar.astro"
   },
-  "scripts": {},
-  "devDependencies": {
-    "@astrojs/starlight": "^0.32.5",
-    "astro": "^5.6.1"
-  },
   "peerDependencies": {
     "@astrojs/starlight": ">=0.32.0",
     "astro": ">=5"
   },
   "dependencies": {
     "astro-integration-kit": "^0.18.0"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.32.5",
+    "astro": "^5.6.1"
   },
   "keywords": [
     "starlight",
@@ -35,8 +34,7 @@
   "homepage": "https://starlight-utils.pages.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lorenzolewis/starlight-utils.git",
-    "directory": "packages/starlight-utils"
+    "url": "https://github.com/intemperie/starlight-utils.git"
   },
-  "bugs": "https://github.com/lorenzolewis/starlight-utils/issues"
+  "bugs": "https://github.com/intemperie/starlight-utils/issues"
 }
