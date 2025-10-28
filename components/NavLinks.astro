@@ -1,17 +1,34 @@
 ---
 /**
- * components/NavLinks.astro — server-rendered header links (no virtual imports).
- * Props: links: Array<{ label: string; href: string }>
+ * Robust NavLinks — accepts either:
+ *  • { links: Array<{ label: string; href?: string; link?: string }> }
+ *  • { items: Array<{ label: string; href?: string; link?: string }> }  <-- what the plugin may pass
+ * Normalizes to [{ label, href }] and applies longest-prefix ancestor-active logic.
  */
-type Link = { label: string; href: string };
-const { links = [] } = Astro.props as { links?: Link[] };
+type Raw = { label: string; href?: string; link?: string };
+const { links: propLinks = [], items: propItems = [] } = Astro.props as {
+  links?: Raw[];
+  items?: Raw[];
+};
 
-// Ancestor-active (longest-prefix) logic
+const raw: Raw[] =
+  (Array.isArray(propLinks) && propLinks.length ? propLinks : propItems) ?? [];
+
+// Normalize
+type Link = { label: string; href: string };
+const normalized: Link[] = raw
+  .map((r) => ({
+    label: r?.label ?? "",
+    href: (r?.href ?? r?.link ?? "").trim(),
+  }))
+  .filter((r) => r.label && r.href);
+
+// Ancestor-active (longest prefix)
 const norm = (s: string) => (s?.endsWith("/") ? s : s + "/");
 const current = norm(Astro.url.pathname);
 
 let bestHref: string | null = null;
-for (const l of links) {
+for (const l of normalized) {
   const h = norm(l.href);
   if (h !== "/" && current.startsWith(h)) {
     if (!bestHref || h.length > norm(bestHref).length) bestHref = l.href;
@@ -22,7 +39,7 @@ const isActive = (href: string) => bestHref && norm(href) === norm(bestHref);
 
 <ul class="slu-nav-links">
   {
-    links.map((l) => (
+    normalized.map((l) => (
       <li>
         <a href={l.href} aria-current={isActive(l.href) ? "true" : "false"}>
           {l.label}
@@ -41,6 +58,6 @@ const isActive = (href: string) => bestHref && norm(href) === norm(bestHref);
     list-style: none;
   }
   .slu-nav-links a[aria-current="true"] {
-    font-weight: 600;
+    font-weight: 500;
   }
 </style>
