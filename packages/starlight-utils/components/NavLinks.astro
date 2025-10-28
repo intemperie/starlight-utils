@@ -1,52 +1,49 @@
 ---
-// Styles adapted from https://github.com/withastro/starlight/blob/main/packages/starlight/components/SidebarSublist.astro
-// and https://www.figma.com/design/GrDkcguAR7tSWPFuLVDixq/Theme---Starlight-Docs?node-id=454-34753&t=fgVYGvAg6ftBSpJY-0
+/**
+ * Server-rendered header links with ancestor-active logic.
+ * Props: links: Array<{ label: string; href: string }>
+ */
+type Link = { label: string; href: string };
+const { links = [] } = Astro.props as { links: Link[] };
+
+const norm = (s: string) => (s?.endsWith("/") ? s : s + "/");
+const current = norm(Astro.url.pathname);
+
+// Pick the longest href that prefixes the current path
+let bestHref: string | null = null;
+for (const l of links) {
+    const h = norm(l.href);
+    if (h !== "/" && current.startsWith(h)) {
+        if (!bestHref || h.length > norm(bestHref).length) bestHref = l.href;
+    }
+}
+const isActive = (href: string) => bestHref && norm(href) === norm(bestHref);
 ---
 
-{
-  Astro.locals.starlightUtils.navLinks && (
-    <ul>
-      {Astro.locals.starlightUtils.navLinks.map((entry) => (
-        <li>
-          <a
-            href={entry.href}
-            {...entry.attrs}
-            aria-current={entry.isCurrent && "page"}
-          >
-            {entry.label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  )
-}
+<ul class="slu-nav-links">
+    {
+        links.map((l) => (
+            <li>
+                <a
+                    href={l.href}
+                    aria-current={isActive(l.href) ? "true" : "false"}
+                >
+                    {l.label}
+                </a>
+            </li>
+        ))
+    }
+</ul>
 
 <style>
-  ul {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    gap: var(--sl-nav-gap);
-  }
-  a {
-    text-decoration: none;
-    color: var(--sl-color-gray-1);
-  }
-
-  a:hover,
-  a:focus {
-    color: var(--sl-color-white);
-  }
-
-  [aria-current="page"],
-  [aria-current="page"]:hover,
-  [aria-current="page"]:focus {
-    font-weight: 600;
-  }
-
-  @media (min-width: 50rem) {
-    a {
-      font-size: var(--sl-text-sm);
+    .slu-nav-links {
+        display: inline-flex;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
     }
-  }
+    .slu-nav-links a[aria-current="true"] {
+        font-weight: 600;
+    }
 </style>
